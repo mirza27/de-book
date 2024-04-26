@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Definisikan model untuk tabel "admins"
+model Admin {
+  admin_id   Int         @id @default(autoincrement())
+  name       String
+  email      String      @unique
+  password   String
+  books      Book[]
+  publishers Publisher[]
+  authors    Author[]
+
+  @@map("admins")
+}
+
+// Definisikan model untuk tabel "books"
+model Book {
+  book_id          Int           @id @default(autoincrement())
+  title            String
+  desc             String?
+  year_release     Int
+  stock            Int
+  price            Int
+  img_url          String?
+  author           Author        @relation(fields: [author_id], references: [author_id])
+  author_id        Int
+  publisher        Publisher     @relation(fields: [publisher_id], references: [publisher_id])
+  publisher_id     Int
+  category         BookCategory  @relation(fields: [book_category_id], references: [book_category_id])
+  book_category_id Int
+  admin            Admin         @relation(fields: [admin_id], references: [admin_id])
+  admin_id         Int
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  OrderDetail      OrderDetail[]
+
+  @@map("books")
+}
+
+// Definisikan model untuk tabel "authors"
+model Author {
+  author_id   Int       @id @default(autoincrement())
+  author_name String
+  date_birth  DateTime?
+  bio         String?
+  admin       Admin     @relation(fields: [admin_id], references: [admin_id])
+  admin_id    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  books       Book[]
+
+  @@map("authors")
+}
+
+// Definisikan model untuk tabel "book_categories"
+model BookCategory {
+  book_category_id Int    @id @default(autoincrement())
+  category_name    String
+  books            Book[]
+
+  @@map("book_categories")
+}
+
+// Definisikan model untuk tabel "order_details"
+model OrderDetail {
+  order_detail_id Int   @id @default(autoincrement())
+  book            Book  @relation(fields: [book_id], references: [book_id])
+  order           Order @relation(fields: [order_id], references: [order_id])
+  order_id        Int
+  book_id         Int
+  quantity        Int
+
+  @@map("order_details")
+}
+
+// Definisikan model untuk tabel "orders"
+model Order {
+  order_id      Int           @id @default(autoincrement())
+  user          User          @relation(fields: [user_id], references: [user_id])
+  user_id       Int
+  total         Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order_details OrderDetail[]
+
+  @@map("orders")
+}
+
+// Definisikan model untuk tabel "publishers"
+model Publisher {
+  publisher_id   Int      @id @default(autoincrement())
+  publisher_name String
+  admin          Admin    @relation(fields: [admin_id], references: [admin_id])
+  admin_id       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  books          Book[]
+
+  @@map("publishers")
+}
+
+// Definisikan model untuk tabel "users"
+model User {
+  user_id   Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  address   String
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+
+  @@map("users")
+}
