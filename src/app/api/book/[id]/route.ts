@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma";
 import { cookies } from "next/headers";
 import { decrypt } from "@/app/lib/encrypt";
+import { getSession } from "@/app/lib/session";
 // import { Request } from "@vercel/node";
 
 interface Params {
@@ -13,8 +14,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     const book_id = parseInt(params.id);
 
     // ambil user id
-    const cookie = cookies().get('session')?.value
-    const session = await decrypt(cookie)!;
+    const session = await getSession();
 
     try {
         // Pengecekan jika id param kosong

@@ -1,6 +1,37 @@
-import React from 'react';
+"use client";
+import { useState, FormEventHandler, useEffect } from "react";
+import { NextPage } from "next";
+import { useRouter, redirect } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
-export default function Page() {
+const SignIn: NextPage = (props): JSX.Element => {
+  const { data: session } = useSession();
+  const [error, setError] = useState("");
+  const [userInfo, setUserInfo] = useState({ email: "", password: "" });
+  const router = useRouter();
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await signIn("credentials", {
+        email: userInfo.email,
+        password: userInfo.password,
+        redirect: true,
+        callbackUrl: "http://localhost:3000/",
+      });
+      console.log(res);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push("/login")
+    }
+  }, []);
+
   return (
     <>
       <div className="bg-white h-screen w-full">
@@ -14,37 +45,57 @@ export default function Page() {
                   <h2 className="card-title text-center text-3xl">Login</h2>
                   <div className="divider"></div>
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text text-black">Email</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Email"
-                    className="input input-bordered bg-white border-black focus:border-black"
-                  />
-                </div>
-                <div className="form-control relative">
-                  <label className="label">
-                    <span className="label-text text-black">Password</span>
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    className="input input-bordered bg-white border-black focus:border-black"
-                  />
-                </div>
-                <div className='flex justify-end'>
-                  <a href="#" className="text-xs font-medium text-gray-600 hover:text-black">
-                    Forget Password
-                  </a>
-                </div>
-                <div className="form-control mt-6">
-                  <button className="btn bg-black text-white">Login</button>
-                </div>
+                <form
+                  action={async (formData) => {
+                    
+                    await signIn("credentials", {
+                      formData: formData,
+                      callbackUrl: "/",
+                    });
+                  }}
+                  onSubmit={handleSubmit}
+                >
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-black">Email</span>
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      onChange={({ target }) =>
+                        setUserInfo({ ...userInfo, email: target.value })
+                      }
+                      className="input input-bordered bg-white border-black focus:border-black"
+                    />
+                  </div>
+                  <div className="form-control relative">
+                    <label className="label">
+                      <span className="label-text text-black">Password</span>
+                    </label>
+                    <input
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                      onChange={({ target }) =>
+                        setUserInfo({ ...userInfo, password: target.value })
+                      }
+                      className="input input-bordered bg-white border-black focus:border-black"
+                    />
+                  </div>
+                  {error && <p className="text-red-500">{error}</p>}
+                  <div className="form-control mt-6">
+                    <button className="btn bg-black text-white">Login</button>
+                  </div>
+                </form>
                 <div className="text-center mt-4">
-                  <span className="text-gray-600">Don't have an account yet?</span>{' '}
-                  <a href="/register" className="text-blue-600 hover:text-blue-800 font-medium">
+                  <span className="text-gray-600">
+                    Don't have an account yet?
+                  </span>{" "}
+                  <a
+                    href="/register"
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
                     Register
                   </a>
                 </div>
@@ -56,3 +107,5 @@ export default function Page() {
     </>
   );
 }
+
+export default SignIn;

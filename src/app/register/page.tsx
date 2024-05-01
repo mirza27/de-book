@@ -1,6 +1,15 @@
+'use client';
 import React from 'react';
+import { useState, FormEventHandler, useEffect } from "react";
+import { NextPage } from "next";
+import { useRouter, redirect } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
-export default function Page() {
+const SignUp: NextPage = (props): JSX.Element => {
+  const [userInfo, setUserInfo] = useState({ email: "", password: "" });
+  const router = useRouter();
+
+
   return (
     <>
       <div className="bg-white h-fit w-full">

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
  
 // 1. Specify protected and public routes
 const protectedRoutes = ['/api/book']
-const publicRoutes = ['/api/login', '/api/register', '/']
+const publicRoutes = ['/api/login', '/api/register',]
  
 export default async function middleware(req: Request) {
   // 2. Check if the current route is protected or public
@@ -12,6 +12,10 @@ export default async function middleware(req: Request) {
   const isProtectedRoute = protectedRoutes.includes(path)
   const isPublicRoute = publicRoutes.includes(path)
   console.log(path);
+
+  if (path == '/'){
+    return NextResponse.redirect('/dashboard')
+  }
  
   // 3. Decrypt the session from the cookie
   const cookie = cookies().get('session')?.value

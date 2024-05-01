@@ -1,6 +1,16 @@
-import 'server-only'
 import { cookies } from 'next/headers'
 import { encrypt, decrypt } from './encrypt'
+
+// get sesi
+export async function getSession() {
+    const cookie = cookies().get('session')?.value
+    if(!cookie) {
+        return null
+    } else {
+        return await decrypt(cookie)
+    }
+}
+
 
 // membuat sesi
 export async function createSession(userId: string) {
