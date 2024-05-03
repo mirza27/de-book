@@ -2,20 +2,17 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../prisma";
 import bcrypt from "bcrypt";
 
-
-// register
+// ADD NEW ADMIN
 export async function POST(request: Request) {
-    const { name, email, password, address, phone } = await request.json();
+    const { name, email, password,} = await request.json();
 
     try {
-        // Periksa apakah email sudah digunakan
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma.admin.findUnique({
             where: {
                 email: email,
             },
         });
 
-        // Jika email sudah digunakan
         if (existingUser) {
             return NextResponse.json(
                 {
@@ -28,45 +25,40 @@ export async function POST(request: Request) {
             );
         }
 
-        // Hash password sebelum menyimpannya di database
-        const hashedPassword = await bcrypt.hash(password, 10);
+         // Hash password sebelum menyimpannya di database
+         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Buat user baru dalam database
-        const newUser = await prisma.user.create({
-            data: {
-                name: name,
-                email: email,
-                password: hashedPassword,
-                address: address,
-                phone: phone,
-            },
-        }); 
+         // Buat user baru dalam database
+         const newAdmin = await prisma.admin.create({
+             data: {
+                 name: name,
+                 email: email,
+                 password: hashedPassword,
+             },
+         }); 
 
-        // Jika registrasi berhasil, kirim respons berhasil
+           // Jika registrasi berhasil, kirim respons berhasil
         return NextResponse.json(
             {
                 success: true,
-                message: "Registration successful",
+                message: "Registration admin successful",
                 user: {
-                    user_id: newUser.user_id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    address: newUser.address,
-                    phone: newUser.phone,
+                    user_id: newAdmin.admin_id,
+                    name: newAdmin.name,
+                    email: newAdmin.email,
+                  
                 },
             },
             {
                 status: 201, // Created
             }
         );
-
-        
     } catch (error) {
         console.error("Registration error:", error);
         return NextResponse.json(
             {
                 success: false,
-                message: "Failed to register",
+                message: "Failed to register admin",
                 error: error,
             },
             {

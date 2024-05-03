@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server";
-import prisma from '../../../../prisma';
+import prisma from '../../../../../prisma';
 import { BookCategory } from '@prisma/client';
 
-// ambil semua category
+// ambil semua buku dan categorynya
 export async function GET() {
     try {
-        const categories: BookCategory[] = await prisma.bookCategory.findMany({
-            include: {
-                books: true,
-            }
-        }
-        );
+        const categories: BookCategory[] = await prisma.bookCategory.findMany();
 
         return NextResponse.json(
             {
                 sucess: true,
-                message: "Success get data categories",
+                message: "Success get data catgories",
                 data: categories,
             },
             {
@@ -27,14 +22,13 @@ export async function GET() {
             {
                 sucess: false,
                 message: "Fail get data categories",
-                error: error,
 
             },
             {
                 status: 200,
             }
         );
-
+        
     }
 }
 

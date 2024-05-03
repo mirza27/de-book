@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma";
-import { cookies } from "next/headers";
-import { decrypt } from "@/app/lib/encrypt";
 import { getSession } from "@/app/lib/session";
 // import { Request } from "@vercel/node";
 
@@ -34,6 +32,10 @@ export async function GET(request: Request, { params }: { params: Params }) {
         const book = await prisma.book.findUnique({
             where: {
                 book_id: book_id, // Menggunakan book_id yang sudah di-parse
+            }, include: {
+                category: true,
+                author: true,
+                publisher: true,
             },
         });
 
@@ -85,10 +87,12 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         stock,
         img_url,
         author_id,
+        publisher_id,
         book_category_id,
         price,
-        admin_id,
     } = await request.json();
+
+    const session = await getSession();
 
     try {
         // Pengecekan jika id param kosong
@@ -116,7 +120,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
                 stock: stock,
                 img_url: img_url,
                 book_category_id: book_category_id,
-                admin_id: admin_id,
+                admin_id: parseInt(session?.userId as string),
+                publisher_id: publisher_id,
                 author_id: author_id,
                 price: price,
             },
