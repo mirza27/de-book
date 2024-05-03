@@ -5,7 +5,7 @@ import React from 'react'
 import Image from 'next/image'
 import AmountInput from '@/components/AmountInput'
 
-export default function page() {
+export default function Cart() {
     return (
         <>
             <NavBar />

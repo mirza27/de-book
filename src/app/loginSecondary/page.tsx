@@ -1,45 +1,37 @@
 "use client";
-import { useState } from "react";
-import { FormEvent } from 'react'; // Import FormEvent
-import { redirect, useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useState, FormEventHandler, useEffect } from "react";
+import { NextPage } from "next";
+import { useRouter, redirect } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
-export default function LoginPage() {
+const SignIn: NextPage = (props): JSX.Element => {
+  const { data: session } = useSession();
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [userInfo, setUserInfo] = useState({ email: "", password: "" });
   const router = useRouter();
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const response = await fetch("/api/login", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    if (response.ok) {
-
-      // membuat kredensial di next auth
-      console.log("Success");
-      await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: true,
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await signIn("credentials", {
+        email: userInfo.email,
+        password: userInfo.password,
+        redirect: false,
         callbackUrl: "http://localhost:3000/",
       });
-      router.push("/dashboard");
-    } else {
-      console.log("Error");
+      console.log(res);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again later.");
     }
   };
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push("/login")
+    }
+  }, []);
+
   return (
     <>
       <div className="bg-white h-screen w-full">
@@ -53,7 +45,16 @@ export default function LoginPage() {
                   <h2 className="card-title text-center text-3xl">Login</h2>
                   <div className="divider"></div>
                 </div>
-                <form onSubmit={handleLogin}>
+                <form
+                  action={async (formData) => {
+                    
+                    await signIn("credentials", {
+                      formData: formData,
+                      callbackUrl: "/",
+                    });
+                  }}
+                  onSubmit={handleSubmit}
+                >
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text text-black">Email</span>
@@ -62,8 +63,9 @@ export default function LoginPage() {
                       name="email"
                       type="email"
                       placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={({ target }) =>
+                        setUserInfo({ ...userInfo, email: target.value })
+                      }
                       className="input input-bordered bg-white border-black focus:border-black"
                     />
                   </div>
@@ -75,16 +77,15 @@ export default function LoginPage() {
                       name="password"
                       type="password"
                       placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={({ target }) =>
+                        setUserInfo({ ...userInfo, password: target.value })
+                      }
                       className="input input-bordered bg-white border-black focus:border-black"
                     />
                   </div>
                   {error && <p className="text-red-500">{error}</p>}
                   <div className="form-control mt-6">
-                    <button type="submit" className="btn bg-black text-white">
-                      Login
-                    </button>
+                    <button className="btn bg-black text-white">Login</button>
                   </div>
                 </form>
                 <div className="text-center mt-4">
@@ -106,3 +107,5 @@ export default function LoginPage() {
     </>
   );
 }
+
+export default SignIn;

@@ -1,13 +1,15 @@
 "use client";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, redirect } from "next/navigation";
 import React, { useState } from "react";
 
+
+
 function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
+
 
   return (
     <div className="navbar sticky top-0 z-50 shadow-md bg-white px-10">

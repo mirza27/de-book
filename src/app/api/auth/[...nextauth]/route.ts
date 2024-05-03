@@ -3,6 +3,7 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "../../../../../prisma";
 import bcrypt from "bcrypt";
+import { createSession } from "@/app/lib/session";
 
 export const authOptions = {
     providers: [CredentialsProvider(
@@ -34,7 +35,6 @@ export const authOptions = {
 
                     return null;
                 }
-
 
                 return {
                     id: `${userFound.user_id}`,

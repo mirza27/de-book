@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../prisma";
 import bcrypt from "bcrypt";
 import { createSession } from "@/app/lib/session";
+import { signIn } from "next-auth/react";
+import type { NextRequest } from 'next/server'
 
 // login
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
+    console.log("terpangil login");
 
     try {
         // Cari pengguna berdasarkan alamat email
@@ -44,7 +47,18 @@ export async function POST(request: Request) {
                 }
             );
         }
+
         await createSession(user.user_id.toString());
+        
+        // membuat credential untuk next auth (sebenere ga perlu tapi gpp)
+        const res = await signIn("credentials", {
+            email: email,
+            password: password,
+            redirect: false,
+            callbackUrl: "http://localhost:3000/",
+          });
+
+
         // Jika email dan password cocok, kirim respons berhasil
         return NextResponse.json(
             {
