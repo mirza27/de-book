@@ -3,15 +3,16 @@ import { NextResponse } from 'next/server'
 import { decrypt } from '@/app/lib/session'
 import { cookies } from 'next/headers'
 import dotenv from 'dotenv';
- 
+import { signIn, signOut, useSession } from "next-auth/react";
+
 // 1. Specify protected and public routes
 const protectedRoutes = ['/api', '/cart']
 const publicRoutes = ['/api/login', '/api/register',]
- 
+
 export default async function middleware(req: NextRequest) {
   console.log("middleware berjalan");
   // 2. Check if the current route is protected or public
-  const Rawpath =  req.url.split('?')[0];
+  const Rawpath = req.url.split('?')[0];
   const path = Rawpath.replace(`${process.env.BASE_URL}`, '');
   const isProtectedRoute = protectedRoutes.includes(path)
   const isPublicRoute = publicRoutes.includes(path)
@@ -19,15 +20,17 @@ export default async function middleware(req: NextRequest) {
   // 3. Decrypt the session from the cookie
   const cookie = cookies().get('session')?.value
   const session = await decrypt(cookie)
-  
+
   // 5. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && (typeof(session) == 'undefined')) {
+  if (isProtectedRoute && (typeof (session) == 'undefined')) {
+    // jika coookie kosong hapus session nex autth
+    signOut()
     const url = req.nextUrl.clone()
     url.pathname = '/login'
     console.log("diarahkan ke /login;")
     return NextResponse.rewrite(url)
   }
- 
+
   // 6. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&
@@ -40,7 +43,7 @@ export default async function middleware(req: NextRequest) {
   console.log("lolos")
   return NextResponse.next()
 }
- 
+
 // Routes Middleware should not run on
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],

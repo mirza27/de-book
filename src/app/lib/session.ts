@@ -18,6 +18,7 @@ export async function createSession(userId: string) {
     const session = await encrypt({ userId, expiresAt })
 
     cookies().set('session', session, {
+        
         httpOnly: true,
         secure: true,
         expires: expiresAt,
