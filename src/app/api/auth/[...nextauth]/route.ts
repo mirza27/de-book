@@ -25,6 +25,36 @@ export const authOptions = {
                         email: email,
                     },
                 });
+
+                // jika user tidak ada maka lanjut ke admin
+                if (!userFound) {
+                    const adminFound = await prisma.admin.findUnique({
+                        where: {
+                            email: email,
+                        },
+                    });
+
+
+                    if (!adminFound) {
+                        return null;
+                    }
+
+                    const passwordMatch = await bcrypt.compare(password, adminFound.password);
+                    if (!passwordMatch) {
+
+                        return null;
+                    }
+
+                    return {
+                        id: `${adminFound.admin_id}`,
+                        name: adminFound.name,
+                        email: adminFound.email,
+
+                    }
+
+
+                }
+
                 if (!userFound) {
 
                     return null;

@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { signIn, signOut, useSession } from "next-auth/react";
 
 // 1. Specify protected and public routes
-const protectedRoutes = ['/api', '/cart']
+const protectedRoutes = ['/api', '/cart', '/dashboard']
 const publicRoutes = ['/api/login', '/api/register',]
 
 export default async function middleware(req: NextRequest) {
