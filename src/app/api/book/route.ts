@@ -41,12 +41,11 @@ export async function GET() {
     }
 }
 
-
 // memasukkan data buuku
 export async function POST(request: Request) {
     const {
         title,
-        description,
+        desc,
         year_release,
         stock,
         img_url,
@@ -57,20 +56,31 @@ export async function POST(request: Request) {
     } = await request.json();
 
     const session = await getSession();
+    if (session === null) {
+        return NextResponse.json(
+            {
+                sucess: false,
+                message: "Session not found",
+            },
+            {
+                status: 401, // Unauthorized
+            }
+        );
+    }
 
     try {
         const book: Book = await prisma.book.create({
             data: {
                 title: title,
-                desc: description,
-                year_release: year_release,
-                stock: stock,
+                desc: desc,
+                year_release: parseInt(year_release),
+                stock: parseInt(stock),
                 img_url: img_url,
-                publisher_id: publisher_id,
-                book_category_id: book_category_id,
+                publisher_id: parseInt(publisher_id),
+                book_category_id: parseInt(book_category_id),
                 admin_id: parseInt(session?.userId as string),
-                author_id: author_id,
-                price: price,
+                author_id: parseInt(author_id),
+                price: parseInt(price),
             },
         });
 

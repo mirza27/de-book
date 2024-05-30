@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
         // Bandingkan password yang diberikan dengan password yang tersimpan dalam database
         const passwordMatch = await bcrypt.compare(password, user.password);
-        
+
 
         // Jika password tidak cocok
         if (!passwordMatch) {
@@ -48,15 +48,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        await createSession(user.user_id.toString());
-        
+        await createSession(user.user_id.toString(), false);
+
         // membuat credential untuk next auth (sebenere ga perlu tapi gpp)
         const res = await signIn("credentials", {
             email: email,
             password: password,
             redirect: false,
             callbackUrl: "http://localhost:3000/",
-          });
+        });
 
 
         // Jika email dan password cocok, kirim respons berhasil

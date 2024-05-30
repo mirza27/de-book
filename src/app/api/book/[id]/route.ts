@@ -64,6 +64,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
             );
         }
     } catch (error) {
+        console.error("Book error:", error);
         return NextResponse.json(
             {
                 success: false,
@@ -116,14 +117,14 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
             data: {
                 title: title,
                 desc: description,
-                year_release: year_release,
-                stock: stock,
+                year_release: parseInt(year_release),
+                stock: parseInt(stock),
                 img_url: img_url,
-                book_category_id: book_category_id,
+                book_category_id: parseInt(book_category_id),
                 admin_id: parseInt(session?.userId as string),
-                publisher_id: publisher_id,
-                author_id: author_id,
-                price: price,
+                publisher_id: parseInt(publisher_id),
+                author_id: parseInt(author_id),
+                price: parseInt(price),
             },
         });
 
@@ -151,6 +152,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
             );
         }
     } catch (error) {
+        console.error("Book error:", error);
         return NextResponse.json(
             {
                 success: false,
