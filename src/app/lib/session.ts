@@ -14,11 +14,10 @@ export async function getSession() {
 
 // membuat sesi
 export async function createSession(userId: string, isAdmin: boolean) {
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000)
     const session = await encrypt({ userId, expiresAt, isAdmin })
 
     cookies().set('session', session, {
-
         httpOnly: true,
         secure: true,
         expires: expiresAt,
@@ -36,7 +35,7 @@ export async function updateSession() {
         return null
     }
 
-    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const expires = new Date(Date.now() + 1 * 60 * 60 * 1000)
     cookies().set('session', session, {
         httpOnly: true,
         secure: true,
