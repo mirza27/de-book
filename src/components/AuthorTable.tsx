@@ -27,38 +27,54 @@ function AuthorTable() {
   }, []);
 
   return (
-    <div className="overflow-x-auto m-5">
+    <div className="overflow-x-auto m-5 min-w-[80%]">
       <h1 className="text-black text-3xl mb-5">Author List</h1>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
         <div>Error: {error}</div>
-      ) : (
-        <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
-          <table className="table text-black table-xs w-full">
-            <thead className="sticky top-0 bg-[#424242] text-white">
+      ) : ( 
+        <div className="rounded-md h-104 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
+          <table className=" table text-black ">
+            <thead className="sticky top-0 bg-[#424242] text-white text-lg">
               <tr>
-                <th>No</th>
-                <th className="py-5">Name</th>
-                <th>Date of Birth</th>
-                <th>Bio</th>
-                <th>Created At</th>
-                <th>Updated At</th>
+                <th className="py-3">No</th>
+                <th className="py-3 px-1">Name</th>
+                <th className="py-3">Date of Birth</th>
+                <th className="py-3">Bio</th>
+                <th className="py-3">Created At</th>
+                <th className="py-3">Updated At</th>
               </tr>
             </thead>
             <tbody>
               {authors.map((author, index) => (
-                <tr key={author.author_id}>
-                  <td>{index + 1}</td>
-                  <td>{author.author_name}</td>
-                  <td>
-                    {new Date(author.date_birth ?? "").toLocaleDateString()}
+                <tr key={author.author_id} className=" even:bg-[#535353] even:text-white odd:bg-white">
+                  <td className="py-2">{index + 1}</td>
+                  <td className="py-2 px-1">{author.author_name}</td>
+                  <td className="py-2">
+                    {new Date(author.date_birth ?? "").toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
                   </td>
-                  <td className="max-w-[450px] overflow-hidden whitespace-nowrap truncate">
+                  <td className="py-2 max-w-[450px] overflow-hidden whitespace-nowrap truncate">
                     {author.bio}
                   </td>
-                  <td>{new Date(author.createdAt).toLocaleDateString()}</td>
-                  <td>{new Date(author.updatedAt).toLocaleDateString()}</td>
+                  <td className="py-2">
+                    {new Date(author.createdAt).toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </td>
+                  <td className="py-2">
+                    {new Date(author.updatedAt).toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -36,30 +36,30 @@ function PublisherTable() {
   }, []);
 
   return (
-    <div className="overflow-x-auto m-5">
+    <div className="overflow-x-auto m-5 w-screen">
       <h1 className="text-black text-3xl mb-5">Publisher List</h1>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
         <div>Error: {error}</div>
       ) : (
-        <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
-          <table className="table text-black table-xs w-full">
-            <thead className="sticky top-0 bg-[#424242] text-white">
+        <div className="max-h-97 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
+          <table className="rounded-xl table text-black table-xs w-full">
+            <thead className=" sticky top-0 bg-[#424242] text-white text-lg">
               <tr>
                 <th>No</th>
-                <th className="py-5">Name</th>
+                <th className="py-2">Name</th>
                 <th>Created At</th>
                 <th>Updated At</th>
               </tr>
             </thead>
             <tbody>
               {publishers.map((publisher, index) => (
-                <tr key={publisher.publisher_id}>
+                <tr key={publisher.publisher_id} className="hover:bg-gray-100">
                   <td>{index + 1}</td>
-                  <td>{publisher.publisher_name}</td>
-                  <td>{new Date(publisher.createdAt).toLocaleDateString()}</td>
-                  <td>{new Date(publisher.updatedAt).toLocaleDateString()}</td>
+                  <td className="py-3">{publisher.publisher_name}</td>
+                  <td>{new Date(publisher.createdAt).toLocaleDateString('id-ID')}</td>
+                  <td>{new Date(publisher.updatedAt).toLocaleDateString('id-ID')}</td>
                 </tr>
               ))}
             </tbody>
