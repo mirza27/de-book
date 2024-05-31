@@ -2,29 +2,78 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import "../app/globals.css";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 function BookTable() {
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch("/api/book");
-        const result = await response.json();
-        if (response.ok) {
-          setBooks(result.data);
-        } else {
-          setError(result.message || "Failed to fetch books");
-        }
-      } catch (error) {
-        setError("Error fetching books: " + error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch("/api/book");
+      const result = await response.json();
+      if (response.ok) {
+        setBooks(result.data);
+      } else {
+        setError(result.message || "Failed to fetch books");
+      }
+    } catch (error) {
+      setError("Error fetching books: " + error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteBook = async (id: number) => {
+    try {
+      const response = await fetch(`/api/book/${id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          title: "Success",
+          text: result.message,
+          icon: "success",
+        });
+        fetchBooks();
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: result.message,
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Internal server error",
+        icon: "error",
+      });
+    }
+  };
+
+  const confirmDelete = (id: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteBook(id);
+      }
+    });
+  };
+
+  useEffect(() => {
     fetchBooks();
   }, []);
 
@@ -32,15 +81,15 @@ function BookTable() {
     <div className="overflow-x-hidden m-5">
       <h1 className="text-black text-3xl">Book List</h1>
       <Link
-        href={"/dashboard/admin/addBook"}
+        href={"/admin/dashboard/addBook"}
         className="btn btn-md btn-primary text-white my-5"
       >
         Add book
       </Link>
       {loading ? (
-        <div>Loading...</div>
+        <div className="text-black">Loading...</div>
       ) : error ? (
-        <div>Error: {error}</div>
+        <div className="text-black">Error: {error}</div>
       ) : (
         <div className="rounded-xl border-2 border-gray-300 shadow-lg max-w-full">
           <div className="max-h-[75vh] max-w-[175vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
@@ -64,7 +113,7 @@ function BookTable() {
                 </tr>
               </thead>
               <tbody className="border-t border-gray-300">
-                {books.map((book) => (
+                {books?.map((book) => (
                   <tr key={book.book_id} className="hover:bg-gray-100">
                     <td></td>
                     <td>{book.title}</td>
@@ -82,7 +131,9 @@ function BookTable() {
                         View Image
                       </a>
                     </td>
-                    <td className="whitespace-normal break-words break-every-10-chars">{book.author.author_name}</td>
+                    <td className="whitespace-normal break-words break-every-10-chars">
+                      {book.author.author_name}
+                    </td>
                     <td>{book.publisher.publisher_name}</td>
                     <td>{book.category.category_name}</td>
                     <td>{book.admin_id}</td>
@@ -90,10 +141,20 @@ function BookTable() {
                     <td>{new Date(book.updatedAt).toLocaleDateString()}</td>
                     <td>
                       <div className="">
-                        <button className="btn btn-warning btn-xs w-14 rounded-badge text-white mb-1">
+                        <button
+                          className="btn btn-warning btn-xs w-14 rounded-badge text-white mb-1"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/editBook/${book.book_id}`
+                            )
+                          }
+                        >
                           Edit
                         </button>
-                        <button className="btn btn-error btn-xs w-14 rounded-badge text-white">
+                        <button
+                          className="btn btn-error btn-xs w-14 rounded-badge text-white"
+                          onClick={() => confirmDelete(book.book_id)}
+                        >
                           Delete
                         </button>
                       </div>

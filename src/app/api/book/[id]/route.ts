@@ -173,6 +173,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     try {
         // Pengecekan jika id param kosong
         if (isNaN(book_id)) {
+
             return NextResponse.json(
                 {
                     success: false,
@@ -202,6 +203,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
             }
         );
     } catch (error) {
+        console.log(error)
         return NextResponse.json(
             {
                 success: false,

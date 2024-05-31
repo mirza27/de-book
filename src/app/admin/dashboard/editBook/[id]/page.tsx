@@ -123,7 +123,7 @@ export default function AddBookPage() {
           onSubmit={handleSubmit}
           className="bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded px-8 pt-6 pb-8 my-5"
         >
-          <h1 className="text-2xl font-bold mb-7">Create New Book</h1>
+          <h1 className="text-2xl font-bold mb-7">Edit Book</h1>
           {isLoading ? (
             <div className="w-full h-fit bg-white py-10">
               <div className="max-w-5xl mx-auto pt-5 text-black">
