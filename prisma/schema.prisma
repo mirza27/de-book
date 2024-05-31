@@ -47,6 +47,7 @@ model Book {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   OrderDetail      OrderDetail[]
+  carts            Cart[]
 
   @@map("books")
 }
@@ -87,6 +88,18 @@ model OrderDetail {
   @@map("order_details")
 }
 
+// model carts
+model Cart {
+  cart_id         Int   @id @default(autoincrement())
+  book            Book  @relation(fields: [book_id], references: [book_id])
+  user            User  @relation(fields: [user_id], references: [user_id])
+  user_id         Int
+  book_id         Int
+  quantity        Int
+
+  @@map("carts")
+}
+
 // Definisikan model untuk tabel "orders"
 model Order {
   order_id      Int           @id @default(autoincrement())
@@ -124,6 +137,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  carts     Cart[]
 
   @@map("users")
 }
