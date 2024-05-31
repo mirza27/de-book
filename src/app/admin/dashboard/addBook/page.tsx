@@ -1,31 +1,108 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { FormEvent } from "react"; // Impo
+import { useEffect } from "react";
+import Swal from "sweetalert2";
 
-function Create() {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    yearRelease: "",
-    stock: "",
-    price: "",
-    imageUrl: "",
-    author: "",
-    publisher: "",
-    category: "",
-    admin: "",
-    createdAt: "",
-    updatedAt: "",
-  });
+export default function AddBookPage() {
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState<Partial<Book>>({});
+  const [bookCategory, setBookCategory] = useState<BookCategory[]>([]);
+  const [publisher, setPublisher] = useState<Publisher[]>([]);
+  const [author, setAuthor] = useState<Author[]>([]);
 
-  const handleChange = (e: any) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const getBookCategory = async () => {
+    try {
+      const response = await fetch("/api/category");
+      const data = await response.json();
+      setBookCategory(data.data);
+      console.log(data.data);
+    } catch (error) {
+      console.error("Error fetching book category data:", error);
+    }
   };
 
-  const handleSubmit = (e: any) => {
+  const getPublishers = async () => {
+    try {
+      const response = await fetch("/api/publisher");
+      const data = await response.json();
+      setPublisher(data.data);
+      console.log(data.data);
+    } catch (error) {
+      console.error("Error fetching publisher data:", error);
+    }
+  };
+
+  const getAuthors = async () => {
+    try {
+      const response = await fetch("/api/author");
+      const data = await response.json();
+      setAuthor(data.data);
+      console.log(data.data);
+    } catch (error) {
+      console.error("Error fetching author data:", error);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+
+    Swal.fire({
+      title: "Please wait...",
+      text: "Submitting your data",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      const response = await fetch("/api/book", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Book created successfully!",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to create book.",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while creating the book.",
+      });
+    }
   };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  useEffect(() => {
+    getBookCategory();
+    getPublishers();
+    getAuthors();
+  }, []);
 
   return (
     <div className="w-full h-fit bg-white py-10">
@@ -43,7 +120,7 @@ function Create() {
               type="text"
               id="title"
               name="title"
-              value={formData.title}
+              value={formData.title || ""}
               onChange={handleChange}
               className="input input-bordered input-md w-full max-w-full bg-white border-1 border-black focus:outline-none focus:border-black"
               required
@@ -59,8 +136,8 @@ function Create() {
             </label>
             <textarea
               id="description"
-              name="description"
-              value={formData.description}
+              name="desc"
+              value={formData.desc || ""}
               onChange={handleChange}
               className="textarea textarea-bordered textarea-md w-full max-w-full bg-white min-h-32 border-black focus:outline-none focus:border-black"
               required
@@ -75,10 +152,12 @@ function Create() {
               Year Release
             </label>
             <input
+              min={2000}
               type="number"
-              id="yearRelease"
-              name="yearRelease"
-              value={formData.yearRelease}
+              id="year_release"
+              name="year_release"
+              max={2024}
+              value={formData.year_release || ""}
               onChange={handleChange}
               className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
               required
@@ -91,9 +170,10 @@ function Create() {
             </label>
             <input
               type="number"
+              min={0}
               id="stock"
               name="stock"
-              value={formData.stock}
+              value={formData.stock || ""}
               onChange={handleChange}
               className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
               required
@@ -108,7 +188,8 @@ function Create() {
               type="number"
               id="price"
               name="price"
-              value={formData.price}
+              min={0}
+              value={formData.price || ""}
               onChange={handleChange}
               className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
               required
@@ -129,41 +210,68 @@ function Create() {
             <label htmlFor="price" className="block text-black font-bold mb-2">
               Author
             </label>
-            <select className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black">
+            <select
+              id="author_id"
+              name="author_id"
+              value={formData.author_id || ""}
+              onChange={handleChange}
+              className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+              required
+            >
               <option disabled selected>
-                Author
+                Select Author
               </option>
-              <option>Normal Apple</option>
-              <option>Normal Orange</option>
-              <option>Normal Tomato</option>
+              {author.map((auth) => (
+                <option key={auth.author_id} value={auth.author_id}>
+                  {auth.author_name}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="price" className="block text-black font-bold mb-2">
-              Publisher
-            </label>
-            <select className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black">
+            <select
+              id="publisher_id"
+              name="publisher_id"
+              value={formData.publisher_id || ""}
+              onChange={handleChange}
+              className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+              required
+            >
               <option disabled selected>
-                Publisher
+                Select Publisher
               </option>
-              <option>Normal Apple</option>
-              <option>Normal Orange</option>
-              <option>Normal Tomato</option>
+              {publisher.map((pub) => (
+                <option key={pub.publisher_id} value={pub.publisher_id}>
+                  {pub.publisher_name}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="price" className="block text-black font-bold mb-2">
+            <label
+              htmlFor="book_category_id"
+              className="block text-black font-bold mb-2"
+            >
               Category
             </label>
-            <select className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black">
+            <select
+              id="book_category_id"
+              name="book_category_id"
+              value={formData.book_category_id || ""}
+              onChange={handleChange}
+              className="select select-bordered w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+              required
+            >
               <option disabled selected>
-                Category
+                Select Category
               </option>
-              <option>Normal Apple</option>
-              <option>Normal Orange</option>
-              <option>Normal Tomato</option>
+              {bookCategory.map((cat) => (
+                <option key={cat.book_category_id} value={cat.book_category_id}>
+                  {cat.category_name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -183,5 +291,3 @@ function Create() {
     </div>
   );
 }
-
-export default Create;

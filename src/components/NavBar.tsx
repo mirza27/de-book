@@ -4,12 +4,25 @@ import Image from "next/image";
 import { useRouter, redirect } from "next/navigation";
 import React, { useState } from "react";
 
-
-
 function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
 
+  const logout = async () => {
+    try {
+      router.push("/login");
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        signOut();
+      }
+    } catch (error) {
+      console.log("Error logging out:", error);
+    }
+  };
 
   return (
     <div className="navbar sticky top-0 z-50 shadow-md bg-white px-10">
@@ -142,8 +155,7 @@ function Navbar() {
                 <li>
                   <a
                     onClick={() => {
-                      signOut();
-                      router.push("/login");
+                      logout();
                     }}
                   >
                     Logout

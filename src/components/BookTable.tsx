@@ -32,7 +32,7 @@ function BookTable() {
     <div className="overflow-x-hidden m-5">
       <h1 className="text-black text-3xl">Book List</h1>
       <Link
-        href={"/admin/dashboard/create"}
+        href={"/dashboard/admin/addBook"}
         className="btn btn-md btn-primary text-white my-5"
       >
         Add book

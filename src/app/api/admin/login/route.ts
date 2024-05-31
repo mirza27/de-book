@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        await createSession(admin.admin_id.toString());
+        await createSession(admin.admin_id.toString(), true);
 
         // membuat credential untuk next auth (sebenere ga perlu tapi gpp)
         const res = await signIn("credentials", {

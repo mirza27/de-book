@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FormEvent } from 'react'; // Import FormEvent
+import { FormEvent } from "react"; // Import FormEvent
 import { redirect, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
@@ -8,36 +8,45 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
-    const response = await fetch("/api/login", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
 
-    if (response.ok) {
-
-      // membuat kredensial di next auth
-      console.log("Success");
-      await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: true,
-        callbackUrl: "http://localhost:3000/",
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
+
+      if (response.ok) {
+        // membuat kredensial di next auth
+        console.log("Success");
+        await signIn("credentials", {
+          email: email,
+          password: password,
+          redirect: false,
+          callbackUrl: process.env.BASE_URL,
+        });
+      } else {
+        console.log("Error");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
       router.push("/dashboard");
-    } else {
-      console.log("Error");
     }
   };
   return (
@@ -82,8 +91,12 @@ export default function LoginPage() {
                   </div>
                   {error && <p className="text-red-500">{error}</p>}
                   <div className="form-control mt-6">
-                    <button type="submit" className="btn bg-black text-white">
-                      Login
+                    <button
+                      type="submit"
+                      className="btn bg-black text-white"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Loading..." : "Login"}
                     </button>
                   </div>
                 </form>

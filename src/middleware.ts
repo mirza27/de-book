@@ -1,47 +1,68 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { decrypt } from '@/app/lib/session'
+import { decrypt, updateSession } from '@/app/lib/session'
 import { cookies } from 'next/headers'
-import dotenv from 'dotenv';
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 // 1. Specify protected and public routes
-const protectedRoutes = ['/api', '/cart', '/dashboard']
-const publicRoutes = ['/api/login', '/api/register',]
+const protectedRoutes = ['/api', '/dashboard/cart', '/dashboard', '/dashboard/book'];
+const publicRoutes = ['/api/login', '/api/register'];
 
 export default async function middleware(req: NextRequest) {
   console.log("middleware berjalan");
+
   // 2. Check if the current route is protected or public
   const Rawpath = req.url.split('?')[0];
   const path = Rawpath.replace(`${process.env.BASE_URL}`, '');
-  const isProtectedRoute = protectedRoutes.includes(path)
-  const isPublicRoute = publicRoutes.includes(path)
+  const isProtectedRoute = protectedRoutes.includes(path);
+  const isPublicRoute = publicRoutes.includes(path);
+  const isAdminRoute = path.startsWith('/admin/');
 
   // 3. Decrypt the session from the cookie
-  const cookie = cookies().get('session')?.value
-  const session = await decrypt(cookie)
+  const cookie = cookies().get('session')?.value;
+  const session = await decrypt(cookie);
+
+  // 4. Parse the admin status from the cookie
+  const isAdmin = session?.isAdmin == true;
+  console.log(session)
+  console.log(isAdmin);
 
   // 5. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && (typeof (session) == 'undefined')) {
-    // jika coookie kosong hapus session nex autth
-    signOut()
-    const url = req.nextUrl.clone()
-    url.pathname = '/login'
-    console.log("diarahkan ke /login;")
-    return NextResponse.rewrite(url)
+  if (isProtectedRoute && (typeof session === 'undefined')) {
+    // jika cookie kosong hapus session next auth
+    signOut({
+      redirect: false,
+      callbackUrl: `${process.env.BASE_URL}/login`,
+    });
+    const url = req.nextUrl.clone();
+    url.pathname = '/login';
+    console.log("diarahkan ke /login;");
+    return NextResponse.rewrite(url);
   }
 
-  // 6. Redirect to /dashboard if the user is authenticated
+  // 6. Restrict access to admin routes if user is not an admin
+  if (isAdminRoute && !isAdmin) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/403'; // Redirect to a "403 Forbidden" page or any other page
+    console.log("Access to admin route denied.");
+    return NextResponse.rewrite(url);
+  }
+
+  // 7. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&
     session?.userId &&
     !req.url.startsWith('/dashboard')
   ) {
-    console.log("kena ini")
-    return NextResponse.redirect(new URL('/', req.url))
+    // update sesson
+    updateSession();
+
+    console.log("kena ini");
+    return NextResponse.redirect(new URL('/', req.url));
   }
-  console.log("lolos")
-  return NextResponse.next()
+
+  console.log("lolos");
+  return NextResponse.next();
 }
 
 // Routes Middleware should not run on
