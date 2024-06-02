@@ -74,7 +74,7 @@ export default function BookDetailPage() {
   return (
     <>
       <NavBar />
-      <div className="w-full h-fit bg-white flex justify-center items-center">
+      <div className="w-full p-10 h-fit bg-white flex justify-center items-center">
         <div className="card w-72 bg-base-100 my-16 shadow-xl">
           <Image
             src={book?.img_url ?? "/book3.png"}
@@ -94,7 +94,7 @@ export default function BookDetailPage() {
           </>
         ) : (
           <>
-            <div className="text-black ml-24 max-w-5xl">
+            <div className="text-black ml-24 max-w-3xl">
               <h1 className="text-4xl py-3">{book?.title}</h1>
               <p className="text-2xl mb-3">Rp {book?.price} -</p>
               <h1 className="text-xl font-medium">Description</h1>

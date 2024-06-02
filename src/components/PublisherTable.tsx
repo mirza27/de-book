@@ -87,7 +87,7 @@ function PublisherTable() {
       ) : error ? (
         <div className="text-black">Error: {error}</div>
       ) : (
-        <div className="max-h-97 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
+        <div className="rounded-md max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
           <table className="rounded-xl table text-black table-xs w-full">
             <thead className=" sticky top-0 bg-[#424242] text-white text-lg">
               <tr>
@@ -100,7 +100,7 @@ function PublisherTable() {
             </thead>
             <tbody>
               {publishers.map((publisher, index) => (
-                <tr key={publisher.publisher_id} className="hover:bg-gray-100">
+                <tr key={publisher.publisher_id} className="even:bg-[#535353] even:text-white odd:bg-white">
                   <td>{index + 1}</td>
                   <td className="py-3">{publisher.publisher_name}</td>
                   <td>

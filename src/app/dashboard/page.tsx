@@ -54,17 +54,17 @@ export default function Home() {
                   key={book.book_id}
                   href={`/dashboard/book/${book.book_id}`}
                 >
-                  <div className="card w-48 bg-white border-2 shadow-xl cursor-pointer">
-                    <figure className="px-5 pt-5">
+                  <div className="card w-48 bg-white border-2 shadow-xl cursor-pointer max-h-80 hover:shadow-gray-400 hover:shadow-xl">
+                    <figure className="px-5 pt-5 h-80">
                       <Image
-                        src={book.img_url || "/book3.png"} // Use placeholder image if img_url is null
+                        src={book.img_url || "/book3.png"}
                         width={130}
                         height={100}
                         alt={book.title}
                       />
                     </figure>
                     <div className="card-body items-center text-center text-black">
-                      <h2 className="card-title text-xl lg:text-2xl">
+                      <h2 className="card-title text-sm lg:text-sm line-clamp-1 max-w-40">
                         {book.title}
                       </h2>
                       <p>Rp{book.price}</p>

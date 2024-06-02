@@ -87,7 +87,7 @@ function AuthorTable() {
       ) : error ? (
         <div className="text-black">Error: {error}</div>
       ) : (
-        <div className="rounded-md h-104 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
+        <div className="rounded-md max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scrollbar-rounded-full">
           <table className="table text-black">
             <thead className="sticky top-0 bg-[#424242] text-white text-lg">
               <tr>
