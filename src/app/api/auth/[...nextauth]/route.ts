@@ -5,7 +5,7 @@ import prisma from "../../../../../prisma";
 import bcrypt from "bcrypt";
 import { createSession } from "@/app/lib/session";
 
-export const authOptions = {
+const authOptions = {
     providers: [CredentialsProvider(
         {
             type: "credentials",
@@ -79,6 +79,6 @@ export const authOptions = {
 }
 
 
-export const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, handler as DELETE, handler as PATCH, handler as PUT };

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { FormEvent } from "react"; // Import FormEvent
-import { redirect, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [error, setError] = useState("");
@@ -102,7 +102,7 @@ export default function LoginPage() {
                 </form>
                 <div className="text-center mt-4">
                   <span className="text-gray-600">
-                    Don't have an account yet?
+                    Dont have an account yet?
                   </span>{" "}
                   <a
                     href="/register"

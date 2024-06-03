@@ -28,7 +28,7 @@ const SignIn: NextPage = (props): JSX.Element => {
 
   useEffect(() => {
     if (session?.user) {
-      router.push("/login")
+      router.push("/login");
     }
   }, []);
 
@@ -47,7 +47,6 @@ const SignIn: NextPage = (props): JSX.Element => {
                 </div>
                 <form
                   action={async (formData) => {
-                    
                     await signIn("credentials", {
                       formData: formData,
                       callbackUrl: "/",
@@ -90,7 +89,7 @@ const SignIn: NextPage = (props): JSX.Element => {
                 </form>
                 <div className="text-center mt-4">
                   <span className="text-gray-600">
-                    Don't have an account yet?
+                    Dont have an account yet?
                   </span>{" "}
                   <a
                     href="/register"
@@ -106,6 +105,6 @@ const SignIn: NextPage = (props): JSX.Element => {
       </div>
     </>
   );
-}
+};
 
 export default SignIn;

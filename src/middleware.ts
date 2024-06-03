@@ -2,7 +2,6 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { decrypt, updateSession } from '@/app/lib/session'
 import { cookies } from 'next/headers'
-import { signOut } from "next-auth/react";
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/api', '/dashboard/cart', '/dashboard', '/dashboard/book'];
@@ -30,10 +29,7 @@ export default async function middleware(req: NextRequest) {
   // 5. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && (typeof session === 'undefined')) {
     // jika cookie kosong hapus session next auth
-    signOut({
-      redirect: false,
-      callbackUrl: `${process.env.BASE_URL}/login`,
-    });
+
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     console.log("diarahkan ke /login;");
