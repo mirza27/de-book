@@ -45,7 +45,7 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-base-100 mb-3">Daftar Buku</h1>
           {isLoading ? (
             <p>Loading...</p>
-          ) : bookData?.length == 0 ? (
+          ) : bookData.length == 0 ? (
             <p>No books found.</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-10">
