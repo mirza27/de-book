@@ -13,30 +13,34 @@ export default function LoginPage() {
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
 
-    if (response.ok) {
-      // membuat kredensial di next auth
-      console.log("Success");
-      await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: true,
-        callbackUrl: "http://localhost:3000/admin/dashboard",
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
-      router.push("/admin/dashboard");
-    } else {
-      console.log("Error");
+
+      if (response.ok) {
+        // membuat kredensial di next auth
+        console.log("Success");
+        await signIn("credentials", {
+          email: email,
+          password: password,
+          redirect: true,
+          callbackUrl: "http://localhost:3000/admin/dashboard",
+        });
+        router.push("/admin/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again later.");
     }
   };
   return (

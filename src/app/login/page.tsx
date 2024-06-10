@@ -38,8 +38,6 @@ export default function LoginPage() {
           redirect: false,
           callbackUrl: process.env.BASE_URL,
         });
-      } else {
-        console.log("Error");
       }
     } catch (error) {
       console.error("Login error:", error);
