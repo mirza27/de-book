@@ -44,6 +44,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+
   // 7. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&

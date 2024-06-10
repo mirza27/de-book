@@ -1,12 +1,30 @@
 "use client";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, redirect } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Navbar() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const [user, setUser] = useState<User>();
+  const [cart, setCart] = useState<Cart[]>([]);
+
+  const getUser = async () => {
+    try {
+      const response = await fetch("/api/user", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        setCart(data.data);
+      }
+      console.log(user);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -15,14 +33,14 @@ function Navbar() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
-
-      if (response.ok) {
-        signOut();
-      }
     } catch (error) {
       console.log("Error logging out:", error);
     }
   };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <div className="navbar sticky top-0 z-50 shadow-md bg-white px-10">
@@ -68,7 +86,8 @@ function Navbar() {
             placeholder="Search"
           />
           <svg
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns="http://www.w3.org/
+            2000/svg"
             viewBox="0 0 16 16"
             fill="black"
             className="w-4 h-4 opacity-70"
@@ -82,7 +101,7 @@ function Navbar() {
         </label> */}
 
         {/* Tombol 'Masuk' hanya muncul jika belum login */}
-        {session?.user?.name ? (
+        {user?.name ? (
           <>
             {/* Profil dan Keranjang hanya muncul jika sudah login */}
             <div className="dropdown dropdown-end mx-2">
@@ -106,7 +125,10 @@ function Navbar() {
                       d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2 a2 2 0 11-4 0 a2 2 0 04 0"
                     />
                   </svg>
-                  <span className="badge badge-sm indicator-item">8</span>
+                  <span className="badge badge-sm indicator-item">
+                    {" "}
+                    {cart?.length}
+                  </span>
                 </div>
               </div>
               <div
@@ -114,10 +136,16 @@ function Navbar() {
                 className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-white shadow"
               >
                 <div className="card-body text-black">
-                  <span className="font-bold text-lg">8 Items</span>
-                  <span className="font-normal">Subtotal: $999</span>
+                  <span className="font-bold text-lg">
+                    {cart?.length} Items
+                  </span>
                   <div className="card-actions">
-                    <button className="btn btn-primary btn-block">
+                    <button
+                      onClick={() => {
+                        router.push("/dashboard/cart");
+                      }}
+                      className="btn btn-primary btn-block"
+                    >
                       View cart
                     </button>
                   </div>
@@ -133,10 +161,7 @@ function Navbar() {
                 className="btn btn-ghost btn-circle avatar"
               >
                 <div className="w-10 rounded-full">
-                  <img
-                    alt="Profil"
-                    src={session?.user?.image || "/person.png"}
-                  />
+                  <img alt="Profil" src={"/person.png"} />
                 </div>
               </div>
               <ul
@@ -145,7 +170,7 @@ function Navbar() {
               >
                 <li>
                   <a className="justify-between">
-                    {session?.user?.name}
+                    {user?.name}
                     <span className="badge">New</span>
                   </a>
                 </li>

@@ -32,12 +32,12 @@ export default function LoginPage() {
       if (response.ok) {
         // membuat kredensial di next auth
         console.log("Success");
-        await signIn("credentials", {
-          email: email,
-          password: password,
-          redirect: false,
-          callbackUrl: process.env.BASE_URL,
-        });
+        // await signIn("credentials", {
+        //   email: email,
+        //   password: password,
+        //   redirect: false,
+        //   callbackUrl: process.env.BASE_URL,
+        // });
         setIsLoading(false);
         router.push("/dashboard");
       }
