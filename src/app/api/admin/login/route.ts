@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
         await createSession(admin.admin_id.toString(), true);
 
         // membuat credential untuk next auth (sebenere ga perlu tapi gpp)
-        const res = await signIn("credentials", {
-            email: email,
-            password: password,
-            redirect: false,
-            callbackUrl: "http://localhost:3000/",
-        });
+        // const res = await signIn("credentials", {
+        //     email: email,
+        //     password: password,
+        //     redirect: false,
+        //     callbackUrl: "http://localhost:3000/",
+        // });
 
 
         // Jika email dan password cocok, kirim respons berhasil

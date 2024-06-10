@@ -5,15 +5,25 @@ import { FormEvent } from "react"; // Impo
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 import { useParams } from "next/navigation";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { v4 as uuidv4 } from "uuid";
 
-export default function AddBookPage() {
+export default function EditBookPage() {
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams<{ id: string }>();
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState<Partial<Book>>({});
   const [bookCategory, setBookCategory] = useState<BookCategory[]>([]);
   const [publisher, setPublisher] = useState<Publisher[]>([]);
   const [author, setAuthor] = useState<Author[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+
+  const s3Client = new S3Client({
+    region: `ap-southeast-1`,
+    credentials: {
+      accessKeyId: `AKIA6GBMCFKBWMKJN7TY`,
+      secretAccessKey: `${process.env.AWS_SECRET_KEY}`,
+    },
+  });
 
   const getBookData = async () => {
     try {
@@ -55,7 +65,29 @@ export default function AddBookPage() {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const uploadToS3 = async (file: File) => {
+    const fileName = `${uuidv4()}-${file.name}`;
+    const params = {
+      Bucket: `debook-bucket`,
+      Key: fileName,
+      Body: file,
+      ContentType: file.type,
+    };
+
+    try {
+      const command = new PutObjectCommand(params);
+      console.log("Uploading file to S3:", fileName);
+      await s3Client.send(command);
+      console.log("File uploaded to S3:", fileName);
+      const publicUrl = `https://debook-bucket.s3.ap-southeast-1.amazonaws.com/${fileName}`;
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading file to S3:", error);
+      throw new Error("Failed to upload file");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     Swal.fire({
@@ -68,13 +100,19 @@ export default function AddBookPage() {
     });
 
     try {
+      let img_url = formData.img_url || "";
+
+      if (file) {
+        img_url = await uploadToS3(file);
+      }
+
       const response = await fetch(`/api/book/${params.id}`, {
         method: "PATCH",
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, img_url }),
       });
 
       if (response.ok) {
@@ -83,6 +121,7 @@ export default function AddBookPage() {
           title: "Success",
           text: "Book updated successfully!",
         });
+        getBookData();
       } else {
         Swal.fire({
           icon: "error",
@@ -106,6 +145,12 @@ export default function AddBookPage() {
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
   };
 
   useEffect(() => {
@@ -225,19 +270,32 @@ export default function AddBookPage() {
                 />
               </div>
 
+              {formData.img_url && (
+                <>
+                  <div>
+                    <label
+                      htmlFor="stock"
+                      className="block text-black font-bold mb-2"
+                    >
+                      Last Book cover
+                    </label>
+                    <img src={formData.img_url} alt="" />
+                  </div>
+                </>
+              )}
+
               <div className="mb-4">
                 <label
-                  htmlFor="price"
+                  htmlFor="img_url"
                   className="block text-black font-bold mb-2"
                 >
-                  Image Cover URL
+                  Image Cover
                 </label>
                 <input
-                  type="text"
+                  type="file"
                   id="img_url"
                   name="img_url"
-                  value={formData.img_url || ""}
-                  onChange={handleChange}
+                  onChange={handleFileChange}
                   className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
                   required
                 />
@@ -329,7 +387,7 @@ export default function AddBookPage() {
                   type="submit"
                   className="btn btn-success btn-md text-white"
                 >
-                  Create
+                  Update
                 </button>
               </div>
             </>

@@ -30,12 +30,12 @@ export default function LoginPage() {
       if (response.ok) {
         // membuat kredensial di next auth
         console.log("Success");
-        await signIn("credentials", {
-          email: email,
-          password: password,
-          redirect: true,
-          callbackUrl: "http://localhost:3000/admin/dashboard",
-        });
+        // await signIn("credentials", {
+        //   email: email,
+        //   password: password,
+        //   redirect: true,
+        //   callbackUrl: "http://localhost:3000/admin/dashboard",
+        // });
         router.push("/admin/dashboard");
       }
     } catch (error) {
