@@ -19,7 +19,7 @@ export async function createSession(userId: string, isAdmin: boolean) {
 
     cookies().set('session', session, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         expires: expiresAt,
         sameSite: 'lax',
         path: '/',
@@ -38,7 +38,7 @@ export async function updateSession() {
     const expires = new Date(Date.now() + 1 * 60 * 60 * 1000)
     cookies().set('session', session, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         expires: expires,
         sameSite: 'lax',
         path: '/',
