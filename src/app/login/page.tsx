@@ -38,13 +38,14 @@ export default function LoginPage() {
           redirect: false,
           callbackUrl: process.env.BASE_URL,
         });
+        setIsLoading(false);
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
       setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
-      router.push("/dashboard");
     }
   };
   return (

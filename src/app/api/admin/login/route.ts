@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
             {
                 success: false,
                 message: "Internal server error",
+                error: error,
             },
             {
                 status: 500, // Internal Server Error
