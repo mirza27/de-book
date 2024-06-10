@@ -31,7 +31,7 @@ function Navbar() {
       </div>
       <div className="flex-none gap-5">
         {/* Dropdown tambahan di sebelah kiri search bar */}
-        <div className="dropdown dropdown-bottom dropdown-end">
+        {/* <div className="dropdown dropdown-bottom dropdown-end">
           <div
             tabIndex={0}
             role="button"
@@ -58,10 +58,10 @@ function Navbar() {
               <a>Kategori 2</a>
             </li>
           </ul>
-        </div>
+        </div> */}
 
         {/* Search bar di sebelah kanan dropdown tambahan */}
-        <label className="input input-md border-black rounded-badge bg-white flex items-center text-black gap-2">
+        {/* <label className="input input-md border-black rounded-badge bg-white flex items-center text-black gap-2">
           <input
             type="text"
             className="grow border-none w-72"
@@ -79,7 +79,7 @@ function Navbar() {
               clipRule="evenodd"
             />
           </svg>
-        </label>
+        </label> */}
 
         {/* Tombol 'Masuk' hanya muncul jika belum login */}
         {session?.user?.name ? (

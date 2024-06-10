@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent } from "react"; // Impo
 import { useEffect } from "react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 export default function AddBookPage() {
   const [error, setError] = useState("");
@@ -12,6 +13,7 @@ export default function AddBookPage() {
   const [publisher, setPublisher] = useState<Publisher[]>([]);
   const [author, setAuthor] = useState<Author[]>([]);
 
+  const router = useRouter();
   const getBookCategory = async () => {
     try {
       const response = await fetch("/api/category");
@@ -73,6 +75,8 @@ export default function AddBookPage() {
           title: "Success",
           text: "Book created successfully!",
         });
+
+        router.push("/admin/dashboard");
       } else {
         Swal.fire({
           icon: "error",
@@ -197,12 +201,17 @@ export default function AddBookPage() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="image" className="block text-black font-bold mb-2">
-              Image
+            <label htmlFor="price" className="block text-black font-bold mb-2">
+              Image Cover URL
             </label>
             <input
-              type="file"
-              className="file-input file-input-bordered file-input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+              type="text"
+              id="img_url"
+              name="img_url"
+              value={formData.img_url || ""}
+              onChange={handleChange}
+              className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+              required
             />
           </div>
 

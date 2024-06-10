@@ -1,10 +1,10 @@
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
-import { decrypt, updateSession } from '@/app/lib/session'
-import { cookies } from 'next/headers'
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { decrypt, updateSession } from '@/app/lib/session';
+import { cookies } from 'next/headers';
 
-// 1. Specify protected and public routes
-const protectedRoutes = ['/api', '/dashboard/cart', '/dashboard', '/dashboard/book'];
+// 1. Specify protected and public routes using regex
+const protectedRoutes = [/^\/api/, /^\/dashboard\/cart/, /^\/dashboard\/book(\/\d+)?$/];
 const publicRoutes = ['/api/login', '/api/register'];
 
 export default async function middleware(req: NextRequest) {
@@ -13,7 +13,7 @@ export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const Rawpath = req.url.split('?')[0];
   const path = Rawpath.replace(`${process.env.BASE_URL}`, '');
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.some(route => route.test(path));
   const isPublicRoute = publicRoutes.includes(path);
   const isAdminRoute = path.startsWith('/admin/');
 
@@ -23,7 +23,7 @@ export default async function middleware(req: NextRequest) {
 
   // 4. Parse the admin status from the cookie
   const isAdmin = session?.isAdmin == true;
-  console.log(session)
+  console.log(session);
   console.log(isAdmin);
 
   // 5. Redirect to /login if the user is not authenticated

@@ -227,14 +227,19 @@ export default function AddBookPage() {
 
               <div className="mb-4">
                 <label
-                  htmlFor="image"
+                  htmlFor="price"
                   className="block text-black font-bold mb-2"
                 >
-                  Image
+                  Image Cover URL
                 </label>
                 <input
-                  type="file"
-                  className="file-input file-input-bordered file-input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+                  type="text"
+                  id="img_url"
+                  name="img_url"
+                  value={formData.img_url || ""}
+                  onChange={handleChange}
+                  className="input input-bordered input-md w-full max-w-full bg-white border-black focus:outline-none focus:border-black"
+                  required
                 />
               </div>
 
